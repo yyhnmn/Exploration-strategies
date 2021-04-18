@@ -1,3 +1,7 @@
+Investigation of exploration strategies in non-stantionary Gridworld.
+
+Base code from:
+
 # Gradient Temporal-Difference Learning with Regularized Corrections
 
 ### [Paper](https://arxiv.org/abs/2007.00611) | [Documentation](#library-documentation) | [Experiments](#experiments)

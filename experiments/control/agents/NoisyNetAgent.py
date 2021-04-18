@@ -14,14 +14,15 @@ class NoisyNetAgent(BaseAgent):
 
     def selectAction(self, x):
         # take a random action about epsilon percent of the time
-        # if np.random.rand() < self.epsilon:
-        #     a = np.random.randint(self.actions)
-        #     return torch.tensor(a, device=device)
+        if np.random.rand() < self.epsilon:
+            a = np.random.randint(self.actions)
+            return torch.tensor(a, device=device)
 
         # otherwise take a greedy action
         q_s, _ = self.policy_net(x)
         # print(q_s.detach().numpy()[0][3])
         # print(q_s.argmax().detach())
+        
 
         return q_s.argmax().detach()
 
@@ -62,6 +63,3 @@ class NoisyNetAgent(BaseAgent):
 
         # update the *policy network* using the combined gradients
         self.optimizer.step()
-
-        self.policy_net.reset_noise()
-        self.target_net.reset_noise()

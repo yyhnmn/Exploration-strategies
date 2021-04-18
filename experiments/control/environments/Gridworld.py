@@ -40,7 +40,7 @@ class Gridworld(BaseEnvironment):
         self.height = 5
         self.features = 2
         self.num_actions = 4
-        self.num_obs = 2
+        self.num_obs = 0
         self.steps = 0
         self.env_refresh = 10
         self.obsList = []

@@ -15,6 +15,12 @@ class NoisyNet(nn.Module):
         self.fc_2 = NoisyLinear(self.h1_size, self.h2_size)
         self.fc_out = NoisyLinear(self.h2_size, self.output_size)
 
+        self.init_weights()
+
+    def init_weights(self):
+        for layer in self.children():
+            nn.init.xavier_uniform_(layer.weight.data)
+            nn.init.normal_(layer.bias.data, 0, 0.1)
 
     def forward(self, x):
         x = x.float()
@@ -28,8 +34,6 @@ class NoisyNet(nn.Module):
     def cloneWeightsTo(self, toNet):
         toNet.load_state_dict(self.state_dict())
 
-    def reset_noise(self):
-        self.fc_2.reset_noise()
-        self.fc_out.reset_noise()
+
 
 
