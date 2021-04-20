@@ -11,16 +11,17 @@ from agents.Greedy import Greedy
 from agents.Boltzmann import Boltzmann
 from agents.ThompsonSampling import ThompsonSampling
 from agents.NoisyNetAgent import NoisyNetAgent
+from agents.CountBasedIR import CountBasedIR
 
 from environments.MountainCar import MountainCar
 from environments.Gridworld import Gridworld
 from utils.Collector import Collector
 from utils.rl_glue import RlGlueCompatWrapper
 
-RUNS = 1
+RUNS = 10
 EPISODES = 100
 # LEARNERS = [QRC, QC, QLearning,DQN]
-LEARNERS = [NoisyNetAgent,UCB,Greedy]
+LEARNERS = [CountBasedIR,UCB,Greedy,ThompsonSampling]
 COLORS = {
     'EpsilonGreedy': 'red',
     'UCB': 'green',
@@ -28,6 +29,7 @@ COLORS = {
     'Boltzmann': 'purple',
     'ThompsonSampling': 'blue',
     'NoisyNetAgent': 'red',
+    'CountBasedIR': 'red',
 
 }
 
@@ -39,6 +41,7 @@ STEPSIZES = {
     'Boltzmann': 0.0009765,
     'ThompsonSampling': 0.0009765,
     'NoisyNetAgent': 0.0009765,
+    'CountBasedIR': 0.0009765
 
 }
 
@@ -47,6 +50,7 @@ collector = Collector()
 
 for run in range(RUNS):
     for Learner in LEARNERS:
+
         np.random.seed(run)
         torch.manual_seed(run)
 

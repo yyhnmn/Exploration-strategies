@@ -40,10 +40,12 @@ class Gridworld(BaseEnvironment):
         self.height = 5
         self.features = 2
         self.num_actions = 4
-        self.num_obs = 5
+        self.num_obs = 0
         self.steps = 0
         self.env_refresh = 10
         self.obsList = []
+        self.actionCounter = np.zeros((self.width,self.height,self.num_actions))
+
 
     def start(self):
         self.x = 0
