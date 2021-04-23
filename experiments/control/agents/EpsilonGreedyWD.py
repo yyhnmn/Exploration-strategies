@@ -3,38 +3,27 @@ import numpy as np
 import torch.nn.functional as f
 from agents.BaseAgent import BaseAgent
 from utils.torch import device, getBatchColumns
-import math
-from environments.Gridworld import Gridworld
 
-env = Gridworld(10)
-
-class ThompsonSampling(BaseAgent):
+class EpsilonGreedyWD(BaseAgent):
     def __init__(self, features, actions, params):
         super().__init__(features, actions, params)
-        self.a = np.ones((env.width,env.height,env.num_actions))
-        self.b = np.ones((env.width,env.height,env.num_actions))
-        self.counter = np.zeros((4))
+        self.epsilon = 0.5
 
-    def selectAction(self, s):
-        x,y = s.numpy()[0]
+    def selectAction(self, x):
+        # take a random action about epsilon percent of the time
+        min_epsilon = 0.05
+        decay = 0.995
+        self.epsilon = max(min_epsilon,self.epsilon*decay)
+        if np.random.rand() < self.epsilon:
+            a = np.random.randint(self.actions)
+            return torch.tensor(a, device=device)
 
-        q_s, _ = self.policy_net(s)
+        # otherwise take a greedy action
+        q_s, _ = self.policy_net(x)
+        # print(q_s.detach().numpy()[0][3])
+        # print(q_s.argmax().detach())
 
-        qvalues = q_s.detach().numpy()[0]
-        v=qvalues
-        qvalues = (v-v.min())/(v.max()-v.min())
-
-        self.a[x][y]+=qvalues
-        self.b[x][y]+=1-qvalues
-
-        
-        result = np.random.beta(self.a[x][y], self.b[x][y])
-
-
-        result = torch.from_numpy(result).argmax().detach()
-
-        return result
-        # return q_s.argmax().detach()
+        return q_s.argmax().detach()
 
     def updateNetwork(self, samples):
         # organize the mini-batch so that we can request "columns" from the data

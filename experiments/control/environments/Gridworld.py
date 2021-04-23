@@ -33,14 +33,14 @@ class Gridworld(BaseEnvironment):
         bottom right of the gridworld
 
     """
-    def __init__(self):
+    def __init__(self,obs):
         self.x = 0
         self.y = 0
-        self.width = 5
-        self.height = 5
+        self.width = 10
+        self.height = 10
         self.features = 2
         self.num_actions = 4
-        self.num_obs = 5
+        self.num_obs = obs
         self.steps = 0
         self.env_refresh = 10
         self.obsList = []

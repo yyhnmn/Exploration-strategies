@@ -8,7 +8,7 @@ from utils.ReplayBuffer import ReplayBuffer
 from utils.torch import device
 from environments.Gridworld import Gridworld
 
-env = Gridworld()
+env = Gridworld(10)
 class BaseAgent:
     def __init__(self, features, actions, params):
         self.features = features
