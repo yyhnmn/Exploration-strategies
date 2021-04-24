@@ -74,7 +74,7 @@ class Gridworld(BaseEnvironment):
                 self.obsList = []
                 for i in range(self.num_obs):
                     obs = (np.random.randint(self.width),np.random.randint(self.height))
-                    while obs == s or obs == (self.width,self.height):
+                    while obs == s or obs == (self.width,self.height) or obs in self.obsList:
                         obs = (np.random.randint(self.width),np.random.randint(self.height))
                     self.obsList.append(obs)
 

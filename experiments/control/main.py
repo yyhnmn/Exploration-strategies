@@ -46,7 +46,7 @@ STEPSIZES = {
     'CountBasedIR': 0.0009765
 }
 
-OBS = [0,10,20,30,40,50,60,70,80,90]
+OBS = [0,10,20,30,40]
 for obs in OBS:
     collector = Collector()
     for run in range(RUNS):
@@ -75,6 +75,7 @@ for obs in OBS:
             for episode in range(EPISODES):
                 glue.num_steps = 0
                 glue.total_reward = 0
+
                 glue.runEpisode(max_steps=1000)
 
                 print(Learner.__name__, run, episode, glue.num_steps)
