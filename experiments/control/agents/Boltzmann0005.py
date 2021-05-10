@@ -3,27 +3,32 @@ import numpy as np
 import torch.nn.functional as f
 from agents.BaseAgent import BaseAgent
 from utils.torch import device, getBatchColumns
+import random
+import math
 
-class EpsilonGreedyWD(BaseAgent):
+class Boltzmann0005(BaseAgent):
     def __init__(self, features, actions, params):
         super().__init__(features, actions, params)
-        self.epsilon = 0.5
+        self.alpha = 0.005
 
     def selectAction(self, x):
-        # take a random action about epsilon percent of the time
-        min_epsilon = 0.1
-        decay = 0.995
-        self.epsilon = max(min_epsilon,self.epsilon*decay)
-        if np.random.rand() < self.epsilon:
-            a = np.random.randint(self.actions)
-            return torch.tensor(a, device=device)
 
+        probs= [] 
+        tau = max(0.5*(0.9999**self.steps),0.001)
         # otherwise take a greedy action
         q_s, _ = self.policy_net(x)
-        # print(q_s.detach().numpy()[0][3])
-        # print(q_s.argmax().detach())
+        qvalues = q_s.detach().numpy()[0]
+        boltzmann = np.zeros((len(qvalues)))
 
-        return q_s.argmax().detach()
+        for q in range(len(qvalues)):
+            num = math.exp((qvalues[q]-max(qvalues))/tau)
+            boltzmann[q] = num
+        probs = boltzmann/sum(boltzmann)
+
+        actions = [i for i in range(len(qvalues))]
+        action = random.choices(actions, weights=probs, k=1)[0]
+        # action = probs.argmax()
+        return torch.tensor(action)
 
     def updateNetwork(self, samples):
         # organize the mini-batch so that we can request "columns" from the data
@@ -49,6 +54,7 @@ class EpsilonGreedyWD(BaseAgent):
         # compute the empirical MSBE for this mini-batch and let torch auto-diff to optimize
         # don't worry about detaching the bootstrapping term for semi-gradient Q-learning
         # the target network handles that
+ 
         target = batch.rewards + batch.gamma * Qspap.detach()
         td_loss = 0.5 * f.mse_loss(target, Qsa)
 
@@ -56,6 +62,7 @@ class EpsilonGreedyWD(BaseAgent):
         # make sure we have no gradients left over from previous update
         self.optimizer.zero_grad()
         self.target_net.zero_grad()
+
 
         # compute the entire gradient of the network using only the td error
         td_loss.backward()

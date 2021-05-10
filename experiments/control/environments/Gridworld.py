@@ -42,17 +42,18 @@ class Gridworld(BaseEnvironment):
         self.num_actions = 4
         self.num_obs = obs
         self.steps = 0
-        self.env_refresh = 10
+        self.env_refresh = 500
         self.obsList = []
+        for i in range(self.num_obs):
+            obs = (np.random.randint(self.width),np.random.randint(self.height))
+            while obs == (0,0) or obs == (self.width-1,self.height-1):
+                obs = (np.random.randint(self.width),np.random.randint(self.height))
+            self.obsList.append(obs)
 
     def start(self):
         self.x = 0
         self.y = 0
-        for i in range(self.num_obs):
-            obs = (np.random.randint(self.width),np.random.randint(self.height))
-            while obs == (0,0) or obs == (self.width,self.height) or obs in self.obsList:
-                obs = (np.random.randint(self.width),np.random.randint(self.height))
-            self.obsList.append(obs)
+
 
         return (self.x, self.y)
 
@@ -74,7 +75,7 @@ class Gridworld(BaseEnvironment):
                 self.obsList = []
                 for i in range(self.num_obs):
                     obs = (np.random.randint(self.width),np.random.randint(self.height))
-                    while obs == s or obs == (self.width,self.height) or obs in self.obsList:
+                    while obs == s or obs == (self.width-1,self.height-1) or obs in self.obsList:
                         obs = (np.random.randint(self.width),np.random.randint(self.height))
                     self.obsList.append(obs)
 

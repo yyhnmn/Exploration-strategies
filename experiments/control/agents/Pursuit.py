@@ -3,27 +3,47 @@ import numpy as np
 import torch.nn.functional as f
 from agents.BaseAgent import BaseAgent
 from utils.torch import device, getBatchColumns
+import math
+import random
+from environments.Gridworld import Gridworld
 
-class EpsilonGreedyWD(BaseAgent):
+
+env = Gridworld(10)
+class Pursuit(BaseAgent):
     def __init__(self, features, actions, params):
         super().__init__(features, actions, params)
-        self.epsilon = 0.5
+        # self.probs=[0.25,0.25,0.25,0.25]
+        self.probs = np.ones((env.width,env.height,env.num_actions))/4
 
-    def selectAction(self, x):
+
+    def selectAction(self, s):
+        x,y = s.numpy()[0]
         # take a random action about epsilon percent of the time
-        min_epsilon = 0.1
-        decay = 0.995
-        self.epsilon = max(min_epsilon,self.epsilon*decay)
-        if np.random.rand() < self.epsilon:
-            a = np.random.randint(self.actions)
-            return torch.tensor(a, device=device)
+        # if np.random.rand() < self.epsilon:
+        #     a = np.random.randint(self.actions)
+        #     return torch.tensor(a, device=device)
 
         # otherwise take a greedy action
-        q_s, _ = self.policy_net(x)
-        # print(q_s.detach().numpy()[0][3])
-        # print(q_s.argmax().detach())
+        q_s, _ = self.policy_net(s)
+        
+        qvalues = q_s.detach().numpy()[0]
+        max_index = np.argmax(qvalues)
+        # for i in range(4):
+        #     if i == max_index:
+        #         self.probs[i]=self.probs[i]+0.1*(1-self.probs[i])
+        #     else:
+        #         self.probs[i]=self.probs[i]+0.1*(0-self.probs[i])
 
-        return q_s.argmax().detach()
+        for i in range(4):
+            if i == max_index:
+                self.probs[x][y][i]=self.probs[x][y][i]+0.1*(1-self.probs[x][y][i])
+            else:
+                self.probs[x][y][i]=self.probs[x][y][i]+0.1*(0-self.probs[x][y][i])
+
+        actions = [i for i in range(len(qvalues))]
+        action = random.choices(actions, weights=self.probs[x][y], k=1)[0]
+        return torch.tensor(action)
+        # return q_s.argmax().detach()
 
     def updateNetwork(self, samples):
         # organize the mini-batch so that we can request "columns" from the data

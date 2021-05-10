@@ -4,16 +4,12 @@ import torch.nn.functional as f
 from agents.BaseAgent import BaseAgent
 from utils.torch import device, getBatchColumns
 
-class EpsilonGreedyWD(BaseAgent):
+class EpsilonGreedy_009(BaseAgent):
     def __init__(self, features, actions, params):
         super().__init__(features, actions, params)
-        self.epsilon = 0.5
-
+        self.epsilon = 0.09
     def selectAction(self, x):
         # take a random action about epsilon percent of the time
-        min_epsilon = 0.1
-        decay = 0.995
-        self.epsilon = max(min_epsilon,self.epsilon*decay)
         if np.random.rand() < self.epsilon:
             a = np.random.randint(self.actions)
             return torch.tensor(a, device=device)
