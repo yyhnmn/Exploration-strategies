@@ -12,7 +12,7 @@ class SA(BaseAgent):
         qvalues = q_s.detach().numpy()[0]
         max_a = np.argmax(qvalues)
         rand_a = np.random.randint(self.actions)
-        T = 500
+        T = max(0.5*(0.9999**self.steps),0.001)
         condition = np.exp((qvalues[rand_a]-qvalues[max_a])/T)
 
         if self.epsilon < condition:

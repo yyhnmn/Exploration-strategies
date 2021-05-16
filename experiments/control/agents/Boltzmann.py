@@ -9,7 +9,7 @@ import math
 class Boltzmann(BaseAgent):
     def __init__(self, features, actions, params):
         super().__init__(features, actions, params)
-        self.alpha = 0.0009765
+        self.alpha = 0.001
 
     def selectAction(self, x):
 

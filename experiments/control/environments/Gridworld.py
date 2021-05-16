@@ -63,12 +63,13 @@ class Gridworld(BaseEnvironment):
     def __init__(self,obs):
         self.x = 0
         self.y = 0
-        self.width = 10
-        self.height = 10
+        self.width = 5
+        self.height = 5
         self.features = 2
         self.num_actions = 4
         self.num_obs = obs
         self.steps = 0
+        # 0 10 100
         self.env_refresh = 10
         self.obsList = []
         self.maze = np.zeros((self.width,self.height))
