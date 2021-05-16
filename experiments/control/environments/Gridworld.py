@@ -24,7 +24,7 @@ def hasPath(maze, start, destination):
                 if (nx,ny) not in used:
                     temp.append((nx, ny))
             return temp
-            
+      
         while queue:
             cell = queue.popleft()
             if cell in visited: continue
@@ -75,6 +75,7 @@ class Gridworld(BaseEnvironment):
 
 
 
+
     def start(self):
         self.x = 0
         self.y = 0
@@ -83,13 +84,12 @@ class Gridworld(BaseEnvironment):
         for i in range(self.num_obs):
             obs = (np.random.randint(self.width),np.random.randint(self.height))
             self.maze[obs[0],obs[1]] = 1
-            while obs == (0,0) or obs == (self.width-1,self.height-1) or hasPath(self.maze,[0,0],[self.width,self.height])==False:
+            while obs == (0,0) or obs == (self.width-1,self.height-1) or hasPath(self.maze,[0,0],[self.width-1,self.height-1])==False:
                 self.maze[obs[0],obs[1]] = 0
                 obs = (np.random.randint(self.width),np.random.randint(self.height))
                 self.maze[obs[0],obs[1]] = 1
             self.obsList.append(obs)
-
-
+            
         return (self.x, self.y)
 
     # give all actions for a given state
@@ -112,7 +112,7 @@ class Gridworld(BaseEnvironment):
                 for i in range(self.num_obs):
                     obs = (np.random.randint(self.width),np.random.randint(self.height))
                     self.maze[obs[0],obs[1]] = 1
-                    while obs == (0,0) or obs == (self.width-1,self.height-1) or hasPath(self.maze,[0,0],[self.width,self.height])==False:
+                    while obs == (0,0) or obs == (self.width-1,self.height-1) or hasPath(self.maze,[s[0],s[1]],[self.width-1,self.height-1])==False:
                         self.maze[obs[0],obs[1]] = 0
                         obs = (np.random.randint(self.width),np.random.randint(self.height))
                         self.maze[obs[0],obs[1]] = 1

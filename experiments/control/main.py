@@ -35,7 +35,7 @@ from utils.rl_glue import RlGlueCompatWrapper
 RUNS = 20
 EPISODES = 100
 # LEARNERS = [QRC, QC, QLearning,DQN]
-LEARNERS = [EpsilonGreedy, CBIR, UCB]
+LEARNERS = [EpsilonGreedy, EpsilonGreedyWD, Greedy]
 COLORS = {
     'CBIR': 'red',
     'EpsilonGreedy': 'blue',
@@ -62,7 +62,7 @@ STEPSIZES = {
     'SA': 0.001,
 }
 
-OBS = [0, 10, 20, 30, 40, 50, 60]
+OBS = [0,10,20,30,40,50,60]
 for obs in OBS:
     collector = Collector()
     for run in range(RUNS):
@@ -95,7 +95,7 @@ for obs in OBS:
                 glue.runEpisode(max_steps=1000)
 
                 print(Learner.__name__, run, episode, glue.num_steps)
-                f = open("EG_CBIR_UCB10x10_SOBS"+str(env.num_obs)+".txt", "a")
+                f = open("EG_EGWD_G10x10_SOBS"+str(env.num_obs)+".txt", "a")
                 content = str(Learner.__name__)+' ' + str(run) + \
                     ' '+str(episode)+' '+str(glue.num_steps)+'\n'
                 f.write(content)
@@ -115,5 +115,5 @@ for obs in OBS:
 
     plt.legend()
     plt.title('10x10 Gridworld -- num_obs='+str(env.num_obs))
-    plt.savefig('figures/EG_CBIR_UCB10x10_SOBS'+str(env.num_obs)+'.pdf')
+    plt.savefig('figures/EG_EGWD_G10x10_SOBS'+str(env.num_obs)+'.pdf')
     plt.close()
