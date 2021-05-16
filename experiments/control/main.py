@@ -20,14 +20,13 @@ from agents.Boltzmann001 import Boltzmann001
 from agents.Boltzmann0005 import Boltzmann0005
 from agents.Boltzmann01 import Boltzmann01
 from agents.Boltzmann05 import Boltzmann05
-
-
+from agents.QTable import QTable
 
 from agents.ThompsonSampling import ThompsonSampling
 from agents.NoisyNetAgent import NoisyNetAgent
-from agents.CountBasedIR import CountBasedIR
-from agents.Pursuit import Pursuit
 
+from agents.Pursuit import Pursuit
+from agents.CBIR import CBIR
 from environments.MountainCar import MountainCar
 from environments.Gridworld import Gridworld
 from utils.Collector import Collector
@@ -36,24 +35,24 @@ from utils.rl_glue import RlGlueCompatWrapper
 RUNS = 20
 EPISODES = 100
 # LEARNERS = [QRC, QC, QLearning,DQN]
-LEARNERS = [EpsilonGreedyWD,EpsilonGreedy,Greedy]
+LEARNERS = [EpsilonGreedy,CBIR,UCB]
 COLORS = {
-    'Boltzmann0001': 'red',
+    'CBIR': 'red',
     'Boltzmann001': 'blue',
     'Boltzmann0005': 'green',
     'Boltzmann01': 'purple',
     'Boltzmann05': 'c',
 
-    'EpsilonGreedy': 'red',
+    'EpsilonGreedy': 'blue',
     'SA': 'green',
     'EpsilonGreedyWD': 'blue',
 
     'UCB': 'green',
     'Greedy': 'green',
 
-    'ThompsonSampling': 'blue',
+    'ThompsonSampling': 'red',
     'NoisyNetAgent': 'red',
-    'CountBasedIR': 'red',
+
     'Pursuit':'green',
 }
 
@@ -61,11 +60,12 @@ COLORS = {
 # 0.0009765
 STEPSIZES = {
     'EpsilonGreedy': 0.001,
-    'EpsilonGreedyWD': 0.001,
-    'Greedy': 0.001,
+    'ThompsonSampling': 0.001,
+    'CBIR': 0.001,
+    'UCB':0.001
 }
 
-OBS = [10,20,30,40,50,60]
+OBS = [0,10,20,30,40,50,60]
 for obs in OBS:
     collector = Collector()
     for run in range(RUNS):
@@ -98,7 +98,7 @@ for obs in OBS:
                 glue.runEpisode(max_steps=1000)
 
                 print(Learner.__name__, run, episode, glue.num_steps)
-                f = open("EG_EGWD_G_5x5_SOBS"+str(env.num_obs)+".txt", "a")
+                f = open("EG_CBIR_UCB10x10_SOBS"+str(env.num_obs)+".txt", "a")
                 content = str(Learner.__name__)+' ' + str(run) + \
                     ' '+str(episode)+' '+str(glue.num_steps)+'\n'
                 f.write(content)
@@ -119,5 +119,5 @@ for obs in OBS:
 
     plt.legend()
     plt.title('10x10 Gridworld -- num_obs='+str(env.num_obs))
-    plt.savefig('figures/EG_EGWD_G_5x5_SOBS'+str(env.num_obs)+'.pdf')
+    plt.savefig('figures/EG_CBIR_UCB10x10_SOBS'+str(env.num_obs)+'.pdf')
     plt.close()

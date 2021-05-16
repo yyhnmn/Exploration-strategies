@@ -1,11 +1,38 @@
 import numpy as np
 from RlGlue import BaseEnvironment
-
+import collections
 
 UP = 0
 LEFT = 1
 DOWN = 2
 RIGHT = 3
+
+def hasPath(maze, start, destination):       
+        row, col = len(maze[0]),len(maze[1])
+        queue = collections.deque([(start[0],start[1])])
+        visited = set()
+        dirs = [(-1,0),(0,-1),(1,0),(0,1)]
+        def neighbors(x,y):
+            temp=[]
+            used = set()
+            used.add((x,y))
+            for dx, dy in dirs:
+                nx,ny = x,y
+                while 0 <= nx+dx < row and 0 <= ny+dy < col and maze[nx+dx][ny+dy] == 0:
+                    nx+=dx
+                    ny+=dy
+                if (nx,ny) not in used:
+                    temp.append((nx, ny))
+            return temp
+            
+        while queue:
+            cell = queue.popleft()
+            if cell in visited: continue
+            if cell == (destination[0], destination[1]): return True
+            visited.add(cell)
+            for neighbor in neighbors(cell[0],cell[1]):
+                queue.append(neighbor)                
+        return False
 
 class Gridworld(BaseEnvironment):
     """
@@ -42,17 +69,23 @@ class Gridworld(BaseEnvironment):
         self.num_actions = 4
         self.num_obs = obs
         self.steps = 0
-        self.env_refresh = 500
+        self.env_refresh = 10
         self.obsList = []
-        for i in range(self.num_obs):
-            obs = (np.random.randint(self.width),np.random.randint(self.height))
-            while obs == (0,0) or obs == (self.width-1,self.height-1):
-                obs = (np.random.randint(self.width),np.random.randint(self.height))
-            self.obsList.append(obs)
+        self.maze = np.zeros((self.width,self.height))
+
+
 
     def start(self):
         self.x = 0
         self.y = 0
+        for i in range(self.num_obs):
+            obs = (np.random.randint(self.width),np.random.randint(self.height))
+            self.maze[obs[0],obs[1]] = 1
+            while obs == (0,0) or obs == (self.width-1,self.height-1) or hasPath(self.maze,[0,0],[self.width,self.height])==False:
+                self.maze[obs[0],obs[1]] = 0
+                obs = (np.random.randint(self.width),np.random.randint(self.height))
+                self.maze[obs[0],obs[1]] = 1
+            self.obsList.append(obs)
 
 
         return (self.x, self.y)
@@ -73,11 +106,16 @@ class Gridworld(BaseEnvironment):
         if self.env_refresh:
             if self.steps % self.env_refresh == 0:
                 self.obsList = []
+                self.maze = np.zeros((self.width,self.height))
                 for i in range(self.num_obs):
                     obs = (np.random.randint(self.width),np.random.randint(self.height))
-                    while obs == s or obs == (self.width-1,self.height-1) or obs in self.obsList:
+                    self.maze[obs[0],obs[1]] = 1
+                    while obs == (0,0) or obs == (self.width-1,self.height-1) or hasPath(self.maze,[0,0],[self.width,self.height])==False:
+                        self.maze[obs[0],obs[1]] = 0
                         obs = (np.random.randint(self.width),np.random.randint(self.height))
+                        self.maze[obs[0],obs[1]] = 1
                     self.obsList.append(obs)
+
 
         if a == UP:
             obsFlag = 0

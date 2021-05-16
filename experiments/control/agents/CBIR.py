@@ -5,17 +5,23 @@ from agents.BaseAgent import BaseAgent
 from utils.torch import device, getBatchColumns
 import math
 
-class CountBasedIR(BaseAgent):
+class CBIR(BaseAgent):
 
     def selectAction(self, s):
         x,y = s.numpy()[0]
+        # take a random action about epsilon percent of the time
+        # if np.random.rand() < self.epsilon:
+        #     a = np.random.randint(self.actions)
+        #     return torch.tensor(a, device=device)
+
+        # otherwise take a greedy action
         q_s, _ = self.policy_net(s)
         
         qvalues = q_s.detach().numpy()[0]
         steps = np.sum(self.actionCounter,axis=2)[x][y]+1
         actionsteps = self.actionCounter[x][y]+1
+        addedvalues = 0.1*(actionsteps+0.01)**(-0.5)
 
-        addedvalues = np.sqrt(2*np.log(steps)/actionsteps)
         v=qvalues
         qvalues = (v-v.min())/(v.max()-v.min())
 
@@ -27,15 +33,6 @@ class CountBasedIR(BaseAgent):
         # organize the mini-batch so that we can request "columns" from the data
         # e.g. we can get all of the actions, or all of the states with a single call
         batch = getBatchColumns(samples)
-        for i in range(batch.size):
-            s = batch.states.numpy()[i]
-            a = batch.actions.numpy()[i][0]
-            x = s[0]
-            y = s[1]
-            r = batch.rewards.numpy()[i]
-            ri = np.power(self.actionCounter[x][y][a]+0.01,-0.5)
-            rt = torch.from_numpy(np.array(min(-0.1,r+0.1*ri)))
-            batch.rewards[i] = rt
 
         # compute Q(s, a) for each sample in mini-batch
         Qs, x = self.policy_net(batch.states)

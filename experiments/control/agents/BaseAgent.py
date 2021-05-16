@@ -59,9 +59,9 @@ class BaseAgent:
     def updateNetwork(self, samples):
         pass
 
-    def update(self, s, a, sp, r, gamma):
+    def update(self, s, a, r, sp, gamma):
         # the "online" sample gets tossed into the replay buffer
-        self.buffer.add((s, a, sp, r, gamma))
+        self.buffer.add((s, a, r, sp, gamma))
         self.steps += 1
         a = a.numpy()
         s = s.numpy()
