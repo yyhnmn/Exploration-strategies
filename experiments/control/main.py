@@ -35,8 +35,7 @@ from utils.rl_glue import RlGlueCompatWrapper
 RUNS = 20
 EPISODES = 100
 # LEARNERS = [QRC, QC, QLearning,DQN]
-#here
-LEARNERS = [EpsilonGreedy,CBIR,UCB]
+LEARNERS = [EpsilonGreedy, CBIR, UCB]
 COLORS = {
     'CBIR': 'red',
     'EpsilonGreedy': 'blue',
@@ -46,7 +45,7 @@ COLORS = {
     'Greedy': 'green',
     'ThompsonSampling': 'red',
     'NoisyNetAgent': 'red',
-    'Pursuit':'green',
+    'Pursuit': 'green',
 }
 
 # use stepsizes found in parameter study
@@ -55,15 +54,15 @@ STEPSIZES = {
     'EpsilonGreedy': 0.001,
     'ThompsonSampling': 0.001,
     'CBIR': 0.001,
-    'UCB':0.001,
-    'EpsilonGreedyWD':0.001,
-    'Pursuit':0.001,
-    'Greedy':0.001,
-    'Boltzmann':0.001,
-    'SA':0.001,
+    'UCB': 0.001,
+    'EpsilonGreedyWD': 0.001,
+    'Pursuit': 0.001,
+    'Greedy': 0.001,
+    'Boltzmann': 0.001,
+    'SA': 0.001,
 }
 
-OBS = [0,10,20,30,40,50,60]
+OBS = [0, 10, 20, 30, 40, 50, 60]
 for obs in OBS:
     collector = Collector()
     for run in range(RUNS):
@@ -96,8 +95,7 @@ for obs in OBS:
                 glue.runEpisode(max_steps=1000)
 
                 print(Learner.__name__, run, episode, glue.num_steps)
-                #here
-                f = open("EG_CBIR_UCB5x5_SOBS"+str(env.num_obs)+".txt", "a")
+                f = open("EG_CBIR_UCB10x10_SOBS"+str(env.num_obs)+".txt", "a")
                 content = str(Learner.__name__)+' ' + str(run) + \
                     ' '+str(episode)+' '+str(glue.num_steps)+'\n'
                 f.write(content)
@@ -106,7 +104,6 @@ for obs in OBS:
                 collector.collect(Learner.__name__, glue.total_reward)
 
             collector.reset()
-
 
     ax = plt.gca()
 
@@ -117,8 +114,6 @@ for obs in OBS:
         plot(ax, data, label=name, color=COLORS[name])
 
     plt.legend()
-    plt.title('5x5 Gridworld -- num_obs='+str(env.num_obs))
-
-    # here
-    plt.savefig('figures/EG_CBIR_UCB5x5_SOBS'+str(env.num_obs)+'.pdf')
+    plt.title('10x10 Gridworld -- num_obs='+str(env.num_obs))
+    plt.savefig('figures/EG_CBIR_UCB10x10_SOBS'+str(env.num_obs)+'.pdf')
     plt.close()
