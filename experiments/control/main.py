@@ -35,14 +35,14 @@ from utils.rl_glue import RlGlueCompatWrapper
 RUNS = 20
 EPISODES = 100
 # LEARNERS = [QRC, QC, QLearning,DQN]
-LEARNERS = [EpsilonGreedy, EpsilonGreedyWD, Greedy]
+LEARNERS = [CBIR,UCB]
 COLORS = {
     'CBIR': 'red',
-    'EpsilonGreedy': 'blue',
+    'EpsilonGreedy': 'red',
     'SA': 'green',
-    'EpsilonGreedyWD': 'blue',
+    'EpsilonGreedyWD': 'green',
     'UCB': 'green',
-    'Greedy': 'green',
+    'Greedy': 'blue',
     'ThompsonSampling': 'red',
     'NoisyNetAgent': 'red',
     'Pursuit': 'green',
@@ -52,17 +52,19 @@ COLORS = {
 # 0.0009765
 STEPSIZES = {
     'EpsilonGreedy': 0.001,
+    'EpsilonGreedyWD': 0.001,
+    'Greedy': 0.001,
+
     'ThompsonSampling': 0.001,
     'CBIR': 0.001,
     'UCB': 0.001,
-    'EpsilonGreedyWD': 0.001,
+
     'Pursuit': 0.001,
-    'Greedy': 0.001,
     'Boltzmann': 0.001,
     'SA': 0.001,
 }
 
-OBS = [0,10,20,30,40,50,60]
+OBS = [60]
 for obs in OBS:
     collector = Collector()
     for run in range(RUNS):
@@ -95,7 +97,7 @@ for obs in OBS:
                 glue.runEpisode(max_steps=1000)
 
                 print(Learner.__name__, run, episode, glue.num_steps)
-                f = open("EG_EGWD_G10x10_SOBS"+str(env.num_obs)+".txt", "a")
+                f = open("CBIR_UCB10x10_SOBS"+str(env.num_obs)+".txt", "a")
                 content = str(Learner.__name__)+' ' + str(run) + \
                     ' '+str(episode)+' '+str(glue.num_steps)+'\n'
                 f.write(content)
@@ -115,5 +117,5 @@ for obs in OBS:
 
     plt.legend()
     plt.title('10x10 Gridworld -- num_obs='+str(env.num_obs))
-    plt.savefig('figures/EG_EGWD_G10x10_SOBS'+str(env.num_obs)+'.pdf')
+    plt.savefig('figures/CBIR_UCB10x10_SOBS'+str(env.num_obs)+'.pdf')
     plt.close()
